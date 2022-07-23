@@ -234,15 +234,13 @@ function encodeToRot13(str) {
       let shiftedCode = code + 13;
       if (code < 91 && shiftedCode >= 91) {
         shiftedCode -= 26;
-      }
-      else if (code > 96 && shiftedCode >= 123) {
+      } else if (code > 96 && shiftedCode >= 123) {
         shiftedCode -= 26;
       }
       result += String.fromCharCode(shiftedCode);
     } else {
       result += str[i];
     }
-
   }
 
   return result;
@@ -261,8 +259,8 @@ function encodeToRot13(str) {
  *   isString('test') => true
  *   isString(new String('test')) => true
  */
-function isString(/* value */) {
-  throw new Error('Not implemented');
+function isString(value) {
+  return value ? Boolean(value.charCodeAt) : false;
 }
 
 /**
@@ -289,8 +287,16 @@ function isString(/* value */) {
  *   'Q♠' => 50
  *   'K♠' => 51
  */
-function getCardId(/* value */) {
-  throw new Error('Not implemented');
+function getCardId(value) {
+  const suits = {
+    '♣': 0, '♦': 1, '♥': 2, '♠': 3,
+  };
+  const courtRanks = {
+    A: 0, J: 10, Q: 11, K: 12,
+  };
+  const [rank, suit] = value.length === 3 ? [value.slice(0, 2), value.slice(2)] : value;
+  const index = (Number.isNaN(+rank) ? courtRanks[rank] : (+rank - 1)) + (suits[suit] * 13);
+  return index;
 }
 
 module.exports = {
