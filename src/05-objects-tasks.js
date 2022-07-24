@@ -19,8 +19,12 @@
  *    console.log(r.height);      // => 20
  *    console.log(r.getArea());   // => 200
  */
-function Rectangle(/* width, height */) {
-  throw new Error('Not implemented');
+function Rectangle(width, height) {
+  this.width = width;
+  this.height = height;
+  this.getArea = function () {
+    return this.width * this.height;
+  };
 }
 
 /**
@@ -33,8 +37,8 @@ function Rectangle(/* width, height */) {
  *    [1,2,3]   =>  '[1,2,3]'
  *    { width: 10, height : 20 } => '{"height":10,"width":20}'
  */
-function getJSON(/* obj */) {
-  throw new Error('Not implemented');
+function getJSON(obj) {
+  return JSON.stringify(obj);
 }
 
 /**
@@ -48,8 +52,8 @@ function getJSON(/* obj */) {
  *    const r = fromJSON(Circle.prototype, '{"radius":10}');
  *
  */
-function fromJSON(/* proto, json */) {
-  throw new Error('Not implemented');
+function fromJSON(proto, json) {
+  return new proto.constructor(...Object.values(JSON.parse(json)));
 }
 
 /**
@@ -106,35 +110,123 @@ function fromJSON(/* proto, json */) {
  *  For more examples see unit tests.
  */
 
-const cssSelectorBuilder = {
-  element(/* value */) {
-    throw new Error('Not implemented');
-  },
+const Query = () => {
+  let element = '';
+  let id = '';
+  let classes = [];
+  let attributes = [];
+  let pseudoClasses = [];
+  let pseudoElement = '';
+  const order = ['element', 'id', 'class', 'attr', 'pseudoClass', 'pseudoElement'];
+  const actualOrder = [];
 
-  id(/* value */) {
-    throw new Error('Not implemented');
-  },
+  const throwShouldBeUnique = () => {
+    throw new Error('Element, id and pseudo-element should not occur more then one time inside the selector');
+  };
 
-  class(/* value */) {
-    throw new Error('Not implemented');
-  },
+  const checkOrder = () => {
+    const correctOrder = order.filter((n) => actualOrder.includes(n));
+    correctOrder.forEach((_, i) => {
+      if (correctOrder[i] !== actualOrder[i]) {
+        throw new Error('Selector parts should be arranged in the following order: element, id, class, attribute, pseudo-class, pseudo-element');
+      }
+    });
+  };
 
-  attr(/* value */) {
-    throw new Error('Not implemented');
-  },
+  return {
+    element(value) {
+      if (element !== '') throwShouldBeUnique();
+      element = value;
+      actualOrder.push('element');
+      checkOrder();
+      return this;
+    },
 
-  pseudoClass(/* value */) {
-    throw new Error('Not implemented');
-  },
+    id(value) {
+      if (id !== '') throwShouldBeUnique();
+      id = `#${value}`;
+      actualOrder.push('id');
+      checkOrder();
+      return this;
+    },
 
-  pseudoElement(/* value */) {
-    throw new Error('Not implemented');
-  },
+    class(value) {
+      classes.push(`.${value}`);
+      actualOrder.push('class');
+      checkOrder();
+      return this;
+    },
 
-  combine(/* selector1, combinator, selector2 */) {
-    throw new Error('Not implemented');
-  },
+    attr(value) {
+      attributes.push(`[${value}]`);
+      actualOrder.push('attr');
+      checkOrder();
+      return this;
+    },
+
+    pseudoClass(value) {
+      pseudoClasses.push(`:${value}`);
+      actualOrder.push('pseudoClass');
+      checkOrder();
+      return this;
+    },
+
+    pseudoElement(value) {
+      if (pseudoElement !== '') throwShouldBeUnique();
+      pseudoElement = `::${value}`;
+      actualOrder.push('pseudoElement');
+      checkOrder();
+      return this;
+    },
+
+    stringify() {
+      const selector = element + id + classes.join('') + attributes.join('') + pseudoClasses.join('') + pseudoElement;
+      return selector;
+    },
+  };
 };
+
+const cssSelectorBuilder = (() => {
+  let queriesForCombination = [];
+
+  return {
+    element(value) {
+      return Query().element(value);
+    },
+
+    id(value) {
+      return Query().id(value);
+    },
+
+    class(value) {
+      return Query().class(value);
+    },
+
+    attr(value) {
+      return Query().attr(value);
+    },
+
+    pseudoClass(value) {
+      return Query().pseudoClass(value);
+    },
+
+    pseudoElement(value) {
+      return Query().pseudoElement(value);
+    },
+
+    combine(selector1, combinator, selector2) {
+      const res = `${selector1.stringify()} ${combinator} ${selector2.stringify()}`;
+      queriesForCombination.push(res);
+      return this;
+    },
+
+    stringify() {
+      const res = queriesForCombination.join('');
+      queriesForCombination = [];
+      return res;
+    },
+  };
+})();
 
 module.exports = {
   Rectangle,
