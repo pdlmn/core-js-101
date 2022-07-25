@@ -200,7 +200,7 @@ function extractEmails(str) {
  */
 function getRectangleString(width, height) {
   let result = `┌${'─'.repeat(width - 2)}┐\n`;
-  for (let i = 0; i < height - 2; i++) {
+  for (let i = 0; i < height - 2; i += 1) {
     result += `│${' '.repeat(width - 2)}│\n`;
   }
   result += `└${'─'.repeat(width - 2)}┘\n`;
@@ -228,7 +228,7 @@ function encodeToRot13(str) {
   const alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
   let result = '';
 
-  for (let i = 0; i < str.length; i++) {
+  for (let i = 0; i < str.length; i += 1) {
     if (alphabet.includes(str[i])) {
       const code = str.charCodeAt(i);
       let shiftedCode = code + 13;

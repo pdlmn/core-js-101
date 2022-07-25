@@ -531,12 +531,6 @@ function evaluateTicTacToePosition(position) {
   return winner || undefined;
 }
 
-console.log(evaluateTicTacToePosition([
-  ['0', 'X', '0'],
-  ['0', '0', 'X'],
-  ['0', 'X'],
-]));
-
 module.exports = {
   getFizzBuzz,
   getFactorial,

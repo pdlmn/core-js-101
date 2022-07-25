@@ -113,9 +113,9 @@ function fromJSON(proto, json) {
 const Query = () => {
   let element = '';
   let id = '';
-  let classes = [];
-  let attributes = [];
-  let pseudoClasses = [];
+  const classes = [];
+  const attributes = [];
+  const pseudoClasses = [];
   let pseudoElement = '';
   const order = ['element', 'id', 'class', 'attr', 'pseudoClass', 'pseudoElement'];
   const actualOrder = [];

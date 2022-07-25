@@ -364,8 +364,9 @@ function getItemsSum(arr) {
  */
 function getFalsyValuesCount(arr) {
   return arr.reduce((acc, cur) => {
-    if (Boolean(cur) === false) acc++;
-    return acc;
+    let result = acc;
+    if (Boolean(cur) === false) result += 1;
+    return result;
   }, 0);
 }
 
@@ -385,8 +386,9 @@ function getFalsyValuesCount(arr) {
  */
 function findAllOccurrences(arr, item) {
   return arr.reduce((acc, cur) => {
-    if (cur === item) acc++;
-    return acc;
+    let result = acc;
+    if (cur === item) result += 1;
+    return result;
   }, 0);
 }
 
