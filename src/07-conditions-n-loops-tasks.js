@@ -301,9 +301,12 @@ const isCreditCardNumber = (ccn) => {
   const sum = String(ccn)
     .split('')
     .map((char) => +char)
-    .map((digit, i, arr) => (arr.length % 2 === 0
-      ? (i % 2 === 0 ? digit * 2 : digit)
-      : (i % 2 === 1 ? digit * 2 : digit)))
+    .map((digit, i, arr) => {
+      if (arr.length % 2 === 0) {
+        return i % 2 === 0 ? digit * 2 : digit;
+      }
+      return i % 2 === 1 ? digit * 2 : digit;
+    })
     .map((digit) => (digit > 9 ? digit - 9 : digit))
     .reduce((acc, cur) => acc + cur, 0);
   return sum % 10 === 0;
@@ -372,8 +375,7 @@ function isBracketsBalanced(str) {
     if (closingBracket) {
       stackOfBrackets.push(closingBracket);
     } else if (Object.values(brackets).includes(arr[i])) {
-      const closingBracket = arr[i];
-      if (closingBracket !== stackOfBrackets.pop()) {
+      if (arr[i] !== stackOfBrackets.pop()) {
         return false;
       }
     }
@@ -426,10 +428,11 @@ function getCommonDirectoryPath(pathes) {
     acc[cur] = acc[cur] === undefined ? 1 : acc[cur] + 1;
     return acc;
   }, {});
-  const mostCommonPathCount = Object.values(countedPathes).reduce((acc, cur) => (acc > cur ? acc : cur), 0);
+  const mostCommonPathCount = Object.values(countedPathes)
+    .reduce((acc, cur) => (acc > cur ? acc : cur), 0);
   const allCommonPathes = Object.entries(countedPathes)
-    .filter(([path, count]) => count === mostCommonPathCount)
-    .map(([path, count]) => path)
+    .filter((pathAndCount) => pathAndCount[1] === mostCommonPathCount)
+    .map((pathAndCount) => pathAndCount[0])
     .flat()
     .join('/')
     .slice(1);
@@ -519,6 +522,8 @@ function evaluateTicTacToePosition(position) {
     || (state[0][2] === mark && state[1][1] === mark && state[2][0] === mark)) {
       return true;
     }
+
+    return undefined;
   };
 
   const isXWon = checkForWin('X', position);
